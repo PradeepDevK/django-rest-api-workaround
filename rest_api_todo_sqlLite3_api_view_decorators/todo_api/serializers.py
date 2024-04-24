@@ -1,0 +1,12 @@
+from rest_framework import serializers
+
+from todo_api import models
+
+
+class ToDoSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = models.Tasks
+        fields = ('id', 'name', 'priority', 'created_on')
+        read_only_fields = ('id', 'created_on')
