@@ -1,6 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
 
 from todo_api import models
 from todo_api import serializers
@@ -10,6 +13,7 @@ class ToDoApiView(APIView):
     """ToDo API View"""
     serializer_class = serializers.ToDoSerializer
 
+    @swagger_auto_schema(operation_description="Get ToDo List and as well as by pk(primary key)")
     def get(self, request, pk=None):
         """Returns list of ToDo(s) | by ID"""
         if pk is not None:
@@ -30,6 +34,16 @@ class ToDoApiView(APIView):
                 'data': serializer.data
             }, status=status.HTTP_200_OK)            
     
+    @swagger_auto_schema(
+        operation_description="Add New ToDo",
+        request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['name', 'priority'],
+        properties={
+            'name': openapi.Schema(type=openapi.TYPE_STRING),
+            'priority': openapi.Schema(type=openapi.TYPE_INTEGER),
+        }
+    ))
     def post(self, request):
         """Create a new ToDo"""
         serializer = self.serializer_class(data=request.data)
@@ -46,6 +60,19 @@ class ToDoApiView(APIView):
                 'error': serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
         
+    @swagger_auto_schema(
+        operation_description="Update ToDo by pk",
+        manual_parameters=[
+            openapi.Parameter('pk', openapi.IN_PATH, description="Primary key of the ToDo", type=openapi.TYPE_INTEGER)
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['name', 'priority'],
+            properties={
+                'name': openapi.Schema(type=openapi.TYPE_STRING),
+                'priority': openapi.Schema(type=openapi.TYPE_INTEGER),
+        })
+    )
     def put(self, request, pk=None):
         """Handle Updating an Object"""
         if pk is not None:
@@ -72,6 +99,20 @@ class ToDoApiView(APIView):
                 'error': 'Please provide a valid ToDo ID.'
             }, status=status.HTTP_400_BAD_REQUEST)
         
+    @swagger_auto_schema(
+        operation_description="Update part of a ToDo by pk",
+        manual_parameters=[
+            openapi.Parameter('pk', openapi.IN_PATH, description="Primary key of the ToDo", type=openapi.TYPE_INTEGER)
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['name', 'priority'],
+            properties={
+                'name': openapi.Schema(type=openapi.TYPE_STRING),
+                'priority': openapi.Schema(type=openapi.TYPE_INTEGER),
+            }
+        )
+    )
     def patch(self, request, pk=None):
         """Handle updating part of an object"""
         if pk is not None:
@@ -98,7 +139,13 @@ class ToDoApiView(APIView):
                 'error': 'Please provide a valid ToDo ID.'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-    def delete(self, request, pk=None):
+    @swagger_auto_schema(
+        operation_description="Delete ToDo by pk",
+        manual_parameters=[
+            openapi.Parameter('pk', openapi.IN_PATH, description="Primary key of the ToDo", type=openapi.TYPE_INTEGER)
+        ]
+    )
+    def delete(self, request, pk):
         """Delete an object"""
         try:
             instance = models.Tasks.objects.get(id=pk)
