@@ -6,11 +6,13 @@ from rest_framework.views import APIView
 
 from watchlist_app.models import (
     WatchList,
-    StreamPlatform
+    StreamPlatform,
+    Review
 )
 from watchlist_app.api.serializers import (
     WatchListSerializer,
-    StreamPlatformSerializer
+    StreamPlatformSerializer,
+    ReviewSerializer
 )
 
 class WatchListAPIView(APIView):
@@ -85,7 +87,7 @@ class StreamPlatformDetailAPIView(APIView):
         except StreamPlatform.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
-        serializer = StreamPlatformSerializer(platform, context={'request': request})
+        serializer = StreamPlatformSerializer(platform, )
         return Response(serializer.data)
     
     def put(self, request, pk=None):
