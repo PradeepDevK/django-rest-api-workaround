@@ -5,6 +5,9 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import mixins
 from rest_framework import generics
+from rest_framework import viewsets
+
+from django.shortcuts import get_object_or_404
 
 from watchlist_app.models import (
     WatchList,
@@ -114,6 +117,20 @@ class WatchDetailsAPIView(APIView):
         except WatchList.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
+ 
+class StreamPlatformViewSet(viewsets.ViewSet):
+    
+    def list(self, request):
+        queryset = StreamPlatform.objects.all()
+        serializer = StreamPlatformSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = StreamPlatform.objects.all()
+        watchlist = get_object_or_404(queryset, pk=pk)
+        serializer = StreamPlatformSerializer(watchlist)
+        return Response(serializer.data)
+   
         
 class StreamPlatformListAPIView(APIView):
     
