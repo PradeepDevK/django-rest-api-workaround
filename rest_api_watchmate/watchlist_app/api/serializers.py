@@ -5,13 +5,6 @@ from watchlist_app.models import (
 )
 
 
-class StreamPlatformSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = StreamPlatform
-        fields = '__all__'
-
-
 class WatchListSerializer(serializers.ModelSerializer):
     #Custom Serializer Fields
     # len_name = serializers.SerializerMethodField()
@@ -21,6 +14,21 @@ class WatchListSerializer(serializers.ModelSerializer):
         # fields = ['id', 'name', 'description']
         fields = '__all__'
         # exclude = ['active']
+        
+    
+class StreamPlatformSerializer(serializers.ModelSerializer):
+    watchlist = WatchListSerializer(many=True, read_only=True)
+    # watchlist = serializers.StringRelatedField(many=True)
+    # watchlist = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # watchlist = serializers.HyperlinkedRelatedField(
+    #     many=True,
+    #     read_only=True,
+    #     view_name='movie_details' # it should be view name
+    # )
+    class Meta:
+        model = StreamPlatform
+        fields = '__all__'
+        
         
     # def get_len_name(self, object):       
     #     return len(object.name)  
