@@ -17,5 +17,5 @@ urlpatterns = [
     path('list/', WatchListAPIView.as_view(), name='movie_list'),
     path('<int:pk>/', WatchDetailsAPIView.as_view(), name='movie_details'),
     path('stream/', StreamPlatformListAPIView.as_view(), name='platform_list'),
-    path('stream/<int:pk>/', StreamPlatformDetailAPIView.as_view(), name='platform_details'),
+    path('stream/<int:pk>/', StreamPlatformDetailAPIView.as_view(), name='streamplatform-detail'),
 ]
