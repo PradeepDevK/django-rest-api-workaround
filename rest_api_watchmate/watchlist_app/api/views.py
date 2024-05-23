@@ -26,13 +26,14 @@ from watchlist_app.api.serializers import (
 )
 
 from watchlist_app.api.permissions import (
-    AdminOrReadOnlyPermission,
-    ReviewUserOrReadOnlyPermission,
+    IsAdminOrReadOnlyPermission,
+    IsReviewUserOrReadOnlyPermission,
 )
 
 
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         return Review.objects.all()
@@ -61,7 +62,7 @@ class ReviewCreate(generics.CreateAPIView):
 class ReviewList(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -71,7 +72,7 @@ class ReviewList(generics.ListAPIView):
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [ReviewUserOrReadOnlyPermission]
+    permission_classes = [IsReviewUserOrReadOnlyPermission]
 
 
 # class ReviewDetail(mixins.RetrieveModelMixin,
@@ -99,59 +100,13 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
 
 #     def post(self, request, *args, **kwargs):
 #         return self.create(request, *args, **kwargs)
-
-class WatchListAPIView(APIView):
-    
-    def get(self, request):
-        movies = WatchList.objects.all()
-        serializer = WatchListSerializer(movies, many=True)
-        return Response(serializer.data)
-    
-    def post(self, request):
-        serializer = WatchListSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-class WatchDetailsAPIView(APIView):
-    
-    def get(self, request, pk=None):
-        try:
-            movie = WatchList.objects.get(pk=pk)
-        except WatchList.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = WatchListSerializer(movie)
-        return Response(serializer.data)
-    
-    def put(self, request, pk=None):
-        try:
-            movie = WatchList.objects.get(pk=pk)
-        except WatchList.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = WatchListSerializer(movie, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-    def delete(self, request, pk=None):
-        try:
-            movie = WatchList.objects.get(pk=pk)
-            movie.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except WatchList.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
+       
 
 class StreamPlatformViewSet(viewsets.ModelViewSet):
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer        
-        
+    permission_classes = [IsAdminOrReadOnlyPermission]
+
  
 # class StreamPlatformViewSet(viewsets.ViewSet):
     
@@ -197,6 +152,7 @@ class StreamPlatformViewSet(viewsets.ModelViewSet):
    
         
 class StreamPlatformListAPIView(APIView):
+    permission_classes = [IsAdminOrReadOnlyPermission]
     
     def get(self, request):
         platforms = StreamPlatform.objects.all()
@@ -213,6 +169,7 @@ class StreamPlatformListAPIView(APIView):
         
 
 class StreamPlatformDetailAPIView(APIView):
+    permission_classes = [IsAdminOrReadOnlyPermission]
     
     def get(self, request, pk=None):
         try:
@@ -243,6 +200,57 @@ class StreamPlatformDetailAPIView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except StreamPlatform.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        
+class WatchListAPIView(APIView):
+    permission_classes = [IsAdminOrReadOnlyPermission]
+    
+    def get(self, request):
+        movies = WatchList.objects.all()
+        serializer = WatchListSerializer(movies, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):        
+        serializer = WatchListSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+class WatchDetailsAPIView(APIView):
+    permission_classes = [IsAdminOrReadOnlyPermission]
+    
+    def get(self, request, pk=None):
+        try:
+            movie = WatchList.objects.get(pk=pk)
+        except WatchList.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = WatchListSerializer(movie)
+        return Response(serializer.data)
+    
+    def put(self, request, pk=None):
+        try:
+            movie = WatchList.objects.get(pk=pk)
+        except WatchList.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = WatchListSerializer(movie, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request, pk=None):
+        try:
+            movie = WatchList.objects.get(pk=pk)
+            movie.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except WatchList.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)        
+        
 
 # @api_view(['GET', 'POST'])
 # def movie_list(request):
