@@ -14,6 +14,12 @@ from rest_framework import viewsets
 
 from django.shortcuts import get_object_or_404
 
+from rest_framework.throttling import (
+    UserRateThrottle,
+    AnonRateThrottle,
+)
+ 
+
 from watchlist_app.models import (
     WatchList,
     StreamPlatform,
@@ -62,7 +68,8 @@ class ReviewCreate(generics.CreateAPIView):
 class ReviewList(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    throttle_classes = [UserRateThrottle, AnonRateThrottle]
     
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -73,6 +80,7 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsReviewUserOrReadOnlyPermission]
+    throttle_classes = [UserRateThrottle, AnonRateThrottle]
 
 
 # class ReviewDetail(mixins.RetrieveModelMixin,
