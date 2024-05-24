@@ -19,6 +19,8 @@ from rest_framework.throttling import (
     AnonRateThrottle,
     ScopedRateThrottle,
 )
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 from watchlist_app.api.throttling import (
     ReviewCreateThrottle,
@@ -41,6 +43,23 @@ from watchlist_app.api.permissions import (
     IsAdminOrReadOnlyPermission,
     IsReviewUserOrReadOnlyPermission,
 )
+
+
+class UserReview(generics.ListAPIView):
+    # queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    # permission_classes = [IsAuthenticated]
+    # throttle_classes = [UserRateThrottle, AnonRateThrottle]
+    # throttle_classes = [ReviewListThrottle, AnonRateThrottle]
+    
+    def get_queryset(self):
+        # url params
+        # username = self.kwargs['username']
+        # return Review.objects.filter(review_user__username=username)
+        
+        #querystring
+        username = self.request.query_params.get('username', None)
+        return Review.objects.filter(review_user__username=username)
 
 
 class ReviewCreate(generics.CreateAPIView):
@@ -78,6 +97,8 @@ class ReviewList(generics.ListAPIView):
     # permission_classes = [IsAuthenticated]
     # throttle_classes = [UserRateThrottle, AnonRateThrottle]
     throttle_classes = [ReviewListThrottle, AnonRateThrottle]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['review_user__username', 'active']
     
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -218,6 +239,17 @@ class StreamPlatformDetailAPIView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except StreamPlatform.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class WatchListGV(generics.ListAPIView):
+    queryset = WatchList.objects.all()
+    serializer_class = WatchListSerializer
+    # filter_backends = [DjangoFilterBackend]
+    # filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.OrderingFilter]
+    # filterset_fields = ['title', 'platform__name']
+    # search_fields = ['title', 'platform__name']
+    ordering_fields = ['average_rating']
         
         
 class WatchListAPIView(APIView):
