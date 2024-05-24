@@ -18,6 +18,11 @@ from rest_framework.throttling import (
     UserRateThrottle,
     AnonRateThrottle,
 )
+
+from watchlist_app.api.throttling import (
+    ReviewCreateThrottle,
+    ReviewListThrottle
+)
  
 
 from watchlist_app.models import (
@@ -40,6 +45,7 @@ from watchlist_app.api.permissions import (
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewCreateThrottle]
     
     def get_queryset(self):
         return Review.objects.all()
@@ -69,7 +75,8 @@ class ReviewList(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     # permission_classes = [IsAuthenticated]
-    throttle_classes = [UserRateThrottle, AnonRateThrottle]
+    # throttle_classes = [UserRateThrottle, AnonRateThrottle]
+    throttle_classes = [ReviewListThrottle, AnonRateThrottle]
     
     def get_queryset(self):
         pk = self.kwargs['pk']
