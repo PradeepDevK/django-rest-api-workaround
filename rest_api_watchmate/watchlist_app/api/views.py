@@ -17,6 +17,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.throttling import (
     UserRateThrottle,
     AnonRateThrottle,
+    ScopedRateThrottle,
 )
 
 from watchlist_app.api.throttling import (
@@ -87,7 +88,9 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsReviewUserOrReadOnlyPermission]
-    throttle_classes = [UserRateThrottle, AnonRateThrottle]
+    # throttle_classes = [UserRateThrottle, AnonRateThrottle]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'review_detail'
 
 
 # class ReviewDetail(mixins.RetrieveModelMixin,
