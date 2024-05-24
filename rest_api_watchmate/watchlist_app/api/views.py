@@ -44,6 +44,10 @@ from watchlist_app.api.permissions import (
     IsReviewUserOrReadOnlyPermission,
 )
 
+from watchlist_app.api.pagination import (
+    WatchListPagination
+)
+
 
 class UserReview(generics.ListAPIView):
     # queryset = Review.objects.all()
@@ -244,6 +248,7 @@ class StreamPlatformDetailAPIView(APIView):
 class WatchListGV(generics.ListAPIView):
     queryset = WatchList.objects.all()
     serializer_class = WatchListSerializer
+    pagination_class = WatchListPagination
     # filter_backends = [DjangoFilterBackend]
     # filter_backends = [filters.SearchFilter]
     filter_backends = [filters.OrderingFilter]
