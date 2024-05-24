@@ -46,7 +46,8 @@ from watchlist_app.api.permissions import (
 
 from watchlist_app.api.pagination import (
     WatchListPagination,
-    WatchListOffsetPagination
+    WatchListOffsetPagination,
+    WatchListCursorPagination
 )
 
 
@@ -249,13 +250,13 @@ class StreamPlatformDetailAPIView(APIView):
 class WatchListGV(generics.ListAPIView):
     queryset = WatchList.objects.all()
     serializer_class = WatchListSerializer
-    pagination_class = WatchListOffsetPagination
+    pagination_class = WatchListCursorPagination
     # filter_backends = [DjangoFilterBackend]
     # filter_backends = [filters.SearchFilter]
-    filter_backends = [filters.OrderingFilter]
+    # filter_backends = [filters.OrderingFilter]
     # filterset_fields = ['title', 'platform__name']
     # search_fields = ['title', 'platform__name']
-    ordering_fields = ['average_rating']
+    # ordering_fields = ['average_rating']
         
         
 class WatchListAPIView(APIView):
