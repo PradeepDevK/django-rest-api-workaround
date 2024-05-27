@@ -147,9 +147,9 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '5/day',
         'user': '10/day',
-        'review_create': '1/day',
-        'review_list': '10/day',
-        'review_detail': '2/day',
+        'review_create': '5/day',
+        'review_list': '15/day',
+        'review_detail': '5/day',
     },
     # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
